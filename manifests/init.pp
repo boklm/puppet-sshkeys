@@ -28,7 +28,7 @@ class sshkeys {
     $options = "",
     $user = ""
   ) {
-    ssh_auth_key_namecheck { "${title}-title": parm => "title", value => $title }
+    namecheck { "${title}-title": parm => "title", value => $title }
 
     # apply defaults
     $_filename = $filename ? { "" => "id_${keytype}", default => $filename }
@@ -39,7 +39,7 @@ class sshkeys {
     }
     $_home = $home ? { "" => "/home/$_user",  default => $home }
 
-    ssh_auth_key_namecheck { "${title}-filename":
+    namecheck { "${title}-filename":
       parm => "filename",
       value => $_filename,
     }
@@ -223,7 +223,7 @@ define ssh_auth_key_server (
 
 
 # Check a name (e.g. key title or filename) for the allowed form
-define ssh_auth_key_namecheck (
+define namecheck (
   $parm,
   $value
 ) {
