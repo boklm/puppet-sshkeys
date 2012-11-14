@@ -5,7 +5,7 @@
 # Version:          0.3.2
 # Release date:     2009-12-29
 
-class ssh::auth {
+class sshkeys {
 
   $keymaster_storage = "/var/lib/keys"
 
@@ -16,8 +16,8 @@ class ssh::auth {
   # Declare keys.  The approach here is just to define a bunch of
   # virtual resources, representing key files on the keymaster, client,
   # and server.  The virtual keys are then realized by
-  # ssh::auth::{keymaster,client,server}, respectively.  The reason for
-  # doing things that way is that it makes ssh::auth::key into a "one
+  # sshkeys::{keymaster,client,server}, respectively.  The reason for
+  # doing things that way is that it makes sshkeys::key into a "one
   # stop shop" where users can declare their keys with all of their
   # parameters, whether those parameters apply to the keymaster, server,
   # or client.  The real work of creating, installing, and removing keys
@@ -80,7 +80,7 @@ class ssh::auth {
   # Keymaster host:
   # Create key storage; create, regenerate, and remove key pairs
   class keymaster {
-    file { $ssh::auth::keymaster_storage:
+    file { $sshkeys::keymaster_storage:
       ensure => directory,
       owner  => puppet,
       group  => puppet,
@@ -100,7 +100,7 @@ class ssh::auth {
     $user = ""
   ) {
     # Realize the virtual client keys.
-    # Override the defaults set in ssh::auth::key, as needed.
+    # Override the defaults set in sshkeys::key, as needed.
     if $ensure {
       Ssh_auth_key_client <| title == $title |> {
 	ensure   => $ensure,
@@ -140,7 +140,7 @@ class ssh::auth {
     $user = ""
   ) {
     # Realize the virtual server keys.
-    # Override the defaults set in ssh::auth::key, as needed.
+    # Override the defaults set in sshkeys::key, as needed.
     if $ensure {
       Ssh_auth_key_server <| title == $title |> {
 	ensure  => $ensure,
@@ -174,7 +174,7 @@ class ssh::auth {
 
 # Create/regenerate/remove a key pair on the keymaster.
 # This definition is private, i.e. it is not intended to be called directly by users.
-# ssh::auth::key calls it to create virtual keys, which are realized in ssh::auth::keymaster.
+# sshkeys::key calls it to create virtual keys, which are realized in sshkeys::keymaster.
 define ssh_auth_key_master (
   $ensure,
   $force,
@@ -190,7 +190,7 @@ define ssh_auth_key_master (
     mode  => 600,
   }
 
-  $keydir = "${ssh::auth::keymaster_storage}/${title}"
+  $keydir = "${sshkeys::keymaster_storage}/${title}"
   $keyfile = "${keydir}/key"
 
   file {
@@ -273,7 +273,7 @@ define ssh_auth_key_client (
     require => [ User[$user], File[$home]],
   }
 
-  $key_src_file = "${ssh::auth::keymaster_storage}/${title}/key" # on the keymaster
+  $key_src_file = "${sshkeys::keymaster_storage}/${title}/key" # on the keymaster
   $key_tgt_file = "${home}/.ssh/${filename}" # on the client
 
   $key_src_content_pub = file("${key_src_file}.pub", "/dev/null")
@@ -305,7 +305,7 @@ define ssh_auth_key_server (
   $user
 ) {
   # on the keymaster:
-  $key_src_dir = "${ssh::auth::keymaster_storage}/${title}"
+  $key_src_dir = "${sshkeys::keymaster_storage}/${title}"
   $key_src_file = "${key_src_dir}/key.pub"
   # on the server:
   $key_tgt_file = "${home}/.ssh/authorized_keys"
@@ -359,9 +359,9 @@ define ssh_auth_key_namecheck (
   $value
 ) {
   if $value !~ /^[A-Za-z0-9]/ {
-    fail("ssh::auth::key: $parm '$value' not allowed: must begin with a letter or digit")
+    fail("sshkeys::key: $parm '$value' not allowed: must begin with a letter or digit")
   }
   if $value !~ /^[A-Za-z0-9_.:@-]+$/ {
-    fail("ssh::auth::key: $parm '$value' not allowed: may only contain the characters A-Za-z0-9_.:@-")
+    fail("sshkeys::key: $parm '$value' not allowed: may only contain the characters A-Za-z0-9_.:@-")
   }
 }
