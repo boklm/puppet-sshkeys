@@ -45,7 +45,7 @@ class sshkeys {
       value => $_filename,
     }
 
-    @ssh_auth_key_master { $title:
+    @setup_key_master { $title:
       ensure  => $ensure,
       force   => $force,
       keytype => $keytype,
@@ -80,7 +80,7 @@ class sshkeys {
       mode   => 644,
     }
     # Realize all virtual master keys
-    Ssh_auth_key_master <| |>
+    Setup_key_master <| |>
   }
 
 
@@ -168,7 +168,7 @@ class sshkeys {
 # Create/regenerate/remove a key pair on the keymaster.
 # This definition is private, i.e. it is not intended to be called directly by users.
 # sshkeys::key calls it to create virtual keys, which are realized in sshkeys::keymaster.
-define ssh_auth_key_master (
+define setup_key_master (
   $ensure,
   $force,
   $keytype,
