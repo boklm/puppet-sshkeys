@@ -1,6 +1,3 @@
-# =========
-# ssh::auth
-# =========
 #
 # The latest official release and documentation for ssh::auth can always
 # be found at http://reductivelabs.com/trac/puppet/wiki/Recipes/ModuleSSHAuth .
@@ -16,11 +13,6 @@ class ssh::auth {
   Notify { withpath => false }
 
 
-  ##########################################################################
-
-
-  # ssh::auth::key
-
   # Declare keys.  The approach here is just to define a bunch of
   # virtual resources, representing key files on the keymaster, client,
   # and server.  The virtual keys are then realized by
@@ -31,7 +23,6 @@ class ssh::auth {
   # or client.  The real work of creating, installing, and removing keys
   # is done in the private definitions called by the virtual resources:
   # ssh_auth_key_{master,server,client}.
-
   define key (
     $ensure = "present",
     $filename = "",
@@ -86,38 +77,21 @@ class ssh::auth {
   }
 
 
-  ##########################################################################
-
-
-  # ssh::auth::keymaster
-  #
   # Keymaster host:
   # Create key storage; create, regenerate, and remove key pairs
-
   class keymaster {
-
-    # Set up key storage
-
     file { $ssh::auth::keymaster_storage:
       ensure => directory,
       owner  => puppet,
       group  => puppet,
       mode   => 644,
     }
-
     # Realize all virtual master keys
     Ssh_auth_key_master <| |>
-
-  } # class keymaster
-
-
-  ##########################################################################
+  }
 
 
-  # ssh::auth::client
-  #
   # Install generated key pairs onto clients
-
   define client (
     $ensure = "",
     $filename = "",
@@ -142,7 +116,6 @@ class ssh::auth {
 	group    => $group,
       }
     }
-
     if $user {
       Ssh_auth_key_client <| title == $title |> {
 	user => $user,
@@ -154,19 +127,11 @@ class ssh::auth {
 	home => $home
       }
     }
-
     realize Ssh_auth_key_client[$title]
-
-  } # define client
-
-
-  ##########################################################################
+  }
 
 
-  # ssh::auth::server
-  #
   # Install public keys onto clients
-
   define server (
     $ensure = "",
     $group = "",
@@ -202,23 +167,14 @@ class ssh::auth {
 	home => $home,
       }
     }
-
     realize Ssh_auth_key_server[$title]
-
-  } # define server
-
-} # class ssh::auth
+  }
+}
 
 
-##########################################################################
-
-
-# ssh_auth_key_master
-#
 # Create/regenerate/remove a key pair on the keymaster.
 # This definition is private, i.e. it is not intended to be called directly by users.
 # ssh::auth::key calls it to create virtual keys, which are realized in ssh::auth::keymaster.
-
 define ssh_auth_key_master (
   $ensure,
   $force,
@@ -297,20 +253,12 @@ define ssh_auth_key_master (
       require => File[$keydir],
       before  => File[$keyfile, "${keyfile}.pub"],
     }
-
-  } # if $ensure  == "present"
-
-} # define ssh_auth_key_master
+  }
+}
 
 
-##########################################################################
-
-
-# ssh_auth_key_client
-#
 # Install a key pair into a user's account.
 # This definition is private, i.e. it is not intended to be called directly by users.
-
 define ssh_auth_key_client (
   $ensure,
   $filename,
@@ -344,18 +292,11 @@ define ssh_auth_key_client (
   } else {
     notify { "Private key file $key_src_file for key $title not found on keymaster; skipping ensure => present": }
   }
-
-} # define ssh_auth_key_client
-
-
-##########################################################################
+}
 
 
-# ssh_auth_key_server
-#
 # Install a public key into a server user's authorized_keys(5) file.
 # This definition is private, i.e. it is not intended to be called directly by users.
-
 define ssh_auth_key_server (
   $ensure,
   $group,
@@ -407,19 +348,12 @@ define ssh_auth_key_server (
 	  options => $options ? { "" => undef, default => $options },
 	}
       }
-    } # if ... else ... else
-  } # if ... else
-
-} # define ssh_auth_key_server
-
-
-##########################################################################
+    }
+  }
+}
 
 
-# ssh_auth_key_namecheck
-#
 # Check a name (e.g. key title or filename) for the allowed form
-
 define ssh_auth_key_namecheck (
   $parm,
   $value
@@ -430,4 +364,4 @@ define ssh_auth_key_namecheck (
   if $value !~ /^[A-Za-z0-9_.:@-]+$/ {
     fail("ssh::auth::key: $parm '$value' not allowed: may only contain the characters A-Za-z0-9_.:@-")
   }
-} # define namecheck
+}
