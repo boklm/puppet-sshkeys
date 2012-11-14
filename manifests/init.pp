@@ -28,7 +28,7 @@ class sshkeys {
     $options = "",
     $user = ""
   ) {
-    namecheck { "${title}-title": parm => "title", value => $title }
+    sshkeys::namecheck { "${title}-title": parm => "title", value => $title }
 
     # apply defaults
     $_filename = $filename ? { "" => "id_${keytype}", default => $filename }
@@ -39,7 +39,7 @@ class sshkeys {
     }
     $_home = $home ? { "" => "/home/$_user",  default => $home }
 
-    namecheck { "${title}-filename":
+    sshkeys::namecheck { "${title}-filename":
       parm => "filename",
       value => $_filename,
     }
@@ -221,16 +221,3 @@ define ssh_auth_key_server (
   }
 }
 
-
-# Check a name (e.g. key title or filename) for the allowed form
-define namecheck (
-  $parm,
-  $value
-) {
-  if $value !~ /^[A-Za-z0-9]/ {
-    fail("sshkeys::key: $parm '$value' not allowed: must begin with a letter or digit")
-  }
-  if $value !~ /^[A-Za-z0-9_.:@-]+$/ {
-    fail("sshkeys::key: $parm '$value' not allowed: may only contain the characters A-Za-z0-9_.:@-")
-  }
-}
