@@ -52,7 +52,7 @@ class sshkeys {
       maxdays => $maxdays,
       mindate => $mindate,
     }
-    @ssh_auth_key_client { $title:
+    @setup_client_key_pair { $title:
       ensure   => $ensure,
       filename => $_filename,
       group    => $group,
@@ -94,32 +94,32 @@ class sshkeys {
     # Realize the virtual client keys.
     # Override the defaults set in sshkeys::key, as needed.
     if $ensure {
-      Ssh_auth_key_client <| title == $title |> {
+      Setup_client_key_pair <| title == $title |> {
 	ensure   => $ensure,
       }
     }
     if $filename {
-      Ssh_auth_key_client <| title == $title |> {
+      Setup_client_key_pair <| title == $title |> {
 	filename => $filename,
       }
     }
     if $group {
-      Ssh_auth_key_client <| title == $title |> {
+      Setup_client_key_pair <| title == $title |> {
 	group    => $group,
       }
     }
     if $user {
-      Ssh_auth_key_client <| title == $title |> {
+      Setup_client_key_pair <| title == $title |> {
 	user => $user,
 	home => "/home/$user",
       }
     }
     if $home {
-      Ssh_auth_key_client <| title == $title |> {
+      Setup_client_key_pair <| title == $title |> {
 	home => $home
       }
     }
-    realize Ssh_auth_key_client[$title]
+    realize Setup_client_key_pair[$title]
   }
 
 
@@ -166,7 +166,7 @@ class sshkeys {
 
 # Install a key pair into a user's account.
 # This definition is private, i.e. it is not intended to be called directly by users.
-define ssh_auth_key_client (
+define setup_client_key_pair (
   $ensure,
   $filename,
   $group,
