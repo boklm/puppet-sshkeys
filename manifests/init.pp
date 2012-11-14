@@ -52,7 +52,7 @@ class sshkeys {
       maxdays => $maxdays,
       mindate => $mindate,
     }
-    @setup_client_key_pair { $title:
+    @sshkeys::setup_client_key_pair { $title:
       ensure   => $ensure,
       filename => $_filename,
       group    => $group,
@@ -94,32 +94,32 @@ class sshkeys {
     # Realize the virtual client keys.
     # Override the defaults set in sshkeys::key, as needed.
     if $ensure {
-      Setup_client_key_pair <| title == $title |> {
+      Sshkeys::Setup_client_key_pair <| title == $title |> {
 	ensure   => $ensure,
       }
     }
     if $filename {
-      Setup_client_key_pair <| title == $title |> {
+      Sshkeys::Setup_client_key_pair <| title == $title |> {
 	filename => $filename,
       }
     }
     if $group {
-      Setup_client_key_pair <| title == $title |> {
+      Sshkeys::Setup_client_key_pair <| title == $title |> {
 	group    => $group,
       }
     }
     if $user {
-      Setup_client_key_pair <| title == $title |> {
+      Sshkeys::Setup_client_key_pair <| title == $title |> {
 	user => $user,
 	home => "/home/$user",
       }
     }
     if $home {
-      Setup_client_key_pair <| title == $title |> {
+      Sshkeys::Setup_client_key_pair <| title == $title |> {
 	home => $home
       }
     }
-    realize Setup_client_key_pair[$title]
+    realize Sshkeys::Setup_client_key_pair[$title]
   }
 
 
@@ -160,44 +160,6 @@ class sshkeys {
       }
     }
     realize Ssh_auth_key_server[$title]
-  }
-}
-
-
-# Install a key pair into a user's account.
-# This definition is private, i.e. it is not intended to be called directly by users.
-define setup_client_key_pair (
-  $ensure,
-  $filename,
-  $group,
-  $home,
-  $user
-) {
-  File {
-    owner   => $user,
-    group   => $group,
-    mode    => 600,
-    require => [ User[$user], File[$home]],
-  }
-
-  $key_src_file = "${sshkeys::keymaster_storage}/${title}/key" # on the keymaster
-  $key_tgt_file = "${home}/.ssh/${filename}" # on the client
-
-  $key_src_content_pub = file("${key_src_file}.pub", "/dev/null")
-  if $ensure == "absent" or $key_src_content_pub =~ /^(ssh-...) ([^ ]+)/ {
-    $keytype = $1
-    $modulus = $2
-    file {
-      $key_tgt_file:
-        ensure  => $ensure,
-        content => file($key_src_file, "/dev/null");
-      "${key_tgt_file}.pub":
-        ensure  => $ensure,
-        content => "$keytype $modulus $title\n",
-        mode    => 644;
-    }
-  } else {
-    notify { "Private key file $key_src_file for key $title not found on keymaster; skipping ensure => present": }
   }
 }
 
