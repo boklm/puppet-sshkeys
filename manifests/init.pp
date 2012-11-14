@@ -1,10 +1,3 @@
-#
-# The latest official release and documentation for ssh::auth can always
-# be found at http://reductivelabs.com/trac/puppet/wiki/Recipes/ModuleSSHAuth .
-#
-# Version:          0.3.2
-# Release date:     2009-12-29
-
 class sshkeys {
 
   $keymaster_storage = "/var/lib/keys"
