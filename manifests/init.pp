@@ -2,9 +2,6 @@ class sshkeys {
 
   $keymaster_storage = "/var/lib/keys"
 
-  Notify { withpath => false }
-
-
   # Declare keys.  The approach here is just to define a bunch of
   # virtual resources, representing key files on the keymaster, client,
   # and server.  The virtual keys are then realized by
@@ -59,7 +56,7 @@ class sshkeys {
       home     => $_home,
       user     => $_user,
     }
-    @setup_authorized_keys { $title:
+    @sshkeys::setup_authorized_keys { $title:
       ensure  => $ensure,
       group   => $group,
       home    => $_home,
@@ -134,90 +131,32 @@ class sshkeys {
     # Realize the virtual server keys.
     # Override the defaults set in sshkeys::key, as needed.
     if $ensure {
-      Setup_authorized_keys <| title == $title |> {
+      Sshkeys::Setup_authorized_keys <| title == $title |> {
 	ensure  => $ensure,
       }
     }
     if $group {
-      Setup_authorized_keys <| title == $title |> {
+      Sshkeys::Setup_authorized_keys <| title == $title |> {
 	group   => $group,
       }
     }
     if $options {
-      Setup_authorized_keys <| title == $title |> {
+      Sshkeys::Setup_authorized_keys <| title == $title |> {
 	options => $options,
       }
     }
 
     if $user {
-      Setup_authorized_keys <| title == $title |> {
+      Sshkeys::Setup_authorized_keys <| title == $title |> {
 	user => $user, home => "/home/$user",
       }
     }
     if $home {
-      Setup_authorized_keys <| title == $title |> {
+      Sshkeys::Setup_authorized_keys <| title == $title |> {
 	home => $home,
       }
     }
-    realize Setup_authorized_keys [$title]
-  }
-}
-
-
-# Install a public key into a server user's authorized_keys(5) file.
-# This definition is private, i.e. it is not intended to be called directly by users.
-define setup_authorized_keys (
-  $ensure,
-  $group,
-  $home,
-  $options,
-  $user
-) {
-  # on the keymaster:
-  $key_src_dir = "${sshkeys::keymaster_storage}/${title}"
-  $key_src_file = "${key_src_dir}/key.pub"
-  # on the server:
-  $key_tgt_file = "${home}/.ssh/authorized_keys"
-
-  File {
-    owner   => $user,
-    group   => $group,
-    require => User[$user],
-    mode    => 600,
-  }
-  Ssh_authorized_key {
-    user   => $user,
-    target => $key_tgt_file,
-  }
-
-  if $ensure == "absent" {
-    ssh_authorized_key { $title:
-      ensure => "absent",
-    }
-  }
-  else {
-    $key_src_content = file($key_src_file, "/dev/null")
-    if ! $key_src_content {
-      notify {
-	"Public key file $key_src_file for key $title not found on keymaster; skipping ensure => present":
-      }
-    } else {
-      if $ensure == "present" and $key_src_content !~ /^(ssh-...) ([^ ]*)/ {
-	err("Can't parse public key file $key_src_file")
-	notify {
-	  "Can't parse public key file $key_src_file for key $title on the keymaster: skipping ensure => $ensure":
-	}
-      } else {
-	$keytype = $1
-	$modulus = $2
-	ssh_authorized_key { $title:
-	  ensure  => "present",
-	  type    => $keytype,
-	  key     => $modulus,
-	  options => $options ? { "" => undef, default => $options },
-	}
-      }
-    }
+    realize Sshkeys::Setup_authorized_keys [$title]
   }
 }
 
