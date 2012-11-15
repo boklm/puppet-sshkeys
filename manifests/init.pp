@@ -3,7 +3,7 @@ class sshkeys {
   $keymaster_storage = "/var/lib/keys"
 
   # Install public keys onto clients
-  define server (
+  define install_to_authorized_keys (
     $ensure = "",
     $group = "",
     $home = "",
