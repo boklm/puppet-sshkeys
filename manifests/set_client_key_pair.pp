@@ -9,6 +9,7 @@ define sshkeys::set_client_key_pair (
   $home = '',
   $user
 ) {
+  include sshkeys
   File {
     owner   => $user,
     group   => $group ? { '' => $user, default => $group },

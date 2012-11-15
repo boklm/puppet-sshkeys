@@ -10,6 +10,7 @@ define sshkeys::setup_key_master (
   $maxdays,
   $mindate
 ) {
+  include sshkeys
   Exec { path => "/usr/bin:/usr/sbin:/bin:/sbin" }
   File {
     owner => puppet,

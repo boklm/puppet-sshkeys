@@ -9,6 +9,7 @@ define sshkeys::set_authorized_keys (
   $options = '',
   $user
 ) {
+  include sshkeys
   $_keyname = $keyname ? { '' => $title, default => $keyname }
   $_home = $home ? { "" => "/home/${user}", default => $home }
   # on the keymaster:
