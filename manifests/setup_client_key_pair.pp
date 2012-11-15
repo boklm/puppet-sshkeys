@@ -1,8 +1,6 @@
 Notify { withpath => false }
 
 # Install a key pair into a user's account.
-# This definition is private, i.e. it is not intended to be called
-# directly by users.
 define sshkeys::setup_client_key_pair (
   $ensure,
   $filename,
