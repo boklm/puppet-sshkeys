@@ -2,21 +2,22 @@ Notify { withpath => false }
 
 # Install a public key into a server user's authorized_keys(5) file.
 define sshkeys::set_authorized_keys (
-  $ensure,
-  $group,
-  $home,
+  $ensure = 'present',
+  $group = '',
+  $home = '',
   $options = '',
   $user
 ) {
+  $_home = $home ? { "" => "/home/${user}", default => $home }
   # on the keymaster:
   $key_src_dir = "${sshkeys::keymaster_storage}/${title}"
   $key_src_file = "${key_src_dir}/key.pub"
   # on the server:
-  $key_tgt_file = "${home}/.ssh/authorized_keys"
+  $key_tgt_file = "${_home}/.ssh/authorized_keys"
 
   File {
     owner   => $user,
-    group   => $group,
+    group   => $group ? { "" => $user, default => $group },
     require => User[$user],
     mode    => 600,
   }
