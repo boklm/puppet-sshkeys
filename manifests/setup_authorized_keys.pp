@@ -1,7 +1,8 @@
 Notify { withpath => false }
 
 # Install a public key into a server user's authorized_keys(5) file.
-# This definition is private, i.e. it is not intended to be called directly by users.
+# This definition is private, i.e. it is not intended to be called
+# directly by users.
 define sshkeys::setup_authorized_keys (
   $ensure,
   $group,
