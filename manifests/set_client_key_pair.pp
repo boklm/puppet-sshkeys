@@ -2,6 +2,7 @@ Notify { withpath => false }
 
 # Install a key pair into a user's account.
 define sshkeys::set_client_key_pair (
+  $keyname = '',
   $ensure = 'present',
   $filename = 'id_rsa',
   $group = '',
@@ -15,8 +16,9 @@ define sshkeys::set_client_key_pair (
     require => [ User[$user], File[$home]],
   }
 
+  $_keyname = $keyname ? { '' => $title, default => $keyname }
   $_home = $home ? { '' => "/home/${user}", default => $home }
-  $key_src_file = "${sshkeys::keymaster_storage}/${title}/key" # on the keymaster
+  $key_src_file = "${sshkeys::keymaster_storage}/${_keyname}/key" # on the keymaster
   $key_tgt_file = "${_home}/.ssh/${filename}" # on the client
 
   $key_src_content_pub = file("${key_src_file}.pub", "/dev/null")
