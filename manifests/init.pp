@@ -3,7 +3,7 @@ class sshkeys {
   $keymaster_storage = "/var/lib/keys"
 
   # Install generated key pairs onto clients
-  define client (
+  define install_client_key_pair (
     $ensure = "",
     $filename = "",
     $group = "",
