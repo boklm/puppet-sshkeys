@@ -59,7 +59,7 @@ class sshkeys {
       home     => $_home,
       user     => $_user,
     }
-    @ssh_auth_key_server { $title:
+    @setup_authorized_keys { $title:
       ensure  => $ensure,
       group   => $group,
       home    => $_home,
@@ -134,39 +134,39 @@ class sshkeys {
     # Realize the virtual server keys.
     # Override the defaults set in sshkeys::key, as needed.
     if $ensure {
-      Ssh_auth_key_server <| title == $title |> {
+      Setup_authorized_keys <| title == $title |> {
 	ensure  => $ensure,
       }
     }
     if $group {
-      Ssh_auth_key_server <| title == $title |> {
+      Setup_authorized_keys <| title == $title |> {
 	group   => $group,
       }
     }
     if $options {
-      Ssh_auth_key_server <| title == $title |> {
+      Setup_authorized_keys <| title == $title |> {
 	options => $options,
       }
     }
 
     if $user {
-      Ssh_auth_key_server <| title == $title |> {
+      Setup_authorized_keys <| title == $title |> {
 	user => $user, home => "/home/$user",
       }
     }
     if $home {
-      Ssh_auth_key_server <| title == $title |> {
+      Setup_authorized_keys <| title == $title |> {
 	home => $home,
       }
     }
-    realize Ssh_auth_key_server[$title]
+    realize Setup_authorized_keys [$title]
   }
 }
 
 
 # Install a public key into a server user's authorized_keys(5) file.
 # This definition is private, i.e. it is not intended to be called directly by users.
-define ssh_auth_key_server (
+define setup_authorized_keys (
   $ensure,
   $group,
   $home,
