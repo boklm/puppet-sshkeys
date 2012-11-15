@@ -5,7 +5,7 @@ define sshkeys::set_authorized_keys (
   $ensure,
   $group,
   $home,
-  $options,
+  $options = '',
   $user
 ) {
   # on the keymaster:
