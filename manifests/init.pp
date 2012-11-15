@@ -12,7 +12,7 @@ class sshkeys {
   # or client.  The real work of creating, installing, and removing keys
   # is done in the private definitions called by the virtual resources:
   # ssh_auth_key_{master,server,client}.
-  define key (
+  define create_key (
     $ensure = "present",
     $filename = "",
     $force = false,
