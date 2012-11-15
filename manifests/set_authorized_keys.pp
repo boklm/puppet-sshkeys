@@ -1,7 +1,7 @@
 Notify { withpath => false }
 
 # Install a public key into a server user's authorized_keys(5) file.
-define sshkeys::setup_authorized_keys (
+define sshkeys::set_authorized_keys (
   $ensure,
   $group,
   $home,
@@ -29,8 +29,7 @@ define sshkeys::setup_authorized_keys (
     ssh_authorized_key { $title:
       ensure => "absent",
     }
-  }
-  else {
+  } else {
     $key_src_content = file($key_src_file, "/dev/null")
     if ! $key_src_content {
       notify {
