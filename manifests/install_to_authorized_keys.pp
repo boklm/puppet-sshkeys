@@ -7,7 +7,7 @@ define sshkeys::install_to_authorized_keys (
   $user = ""
 ) {
   # Realize the virtual server keys.
-  # Override the defaults set in sshkeys::key, as needed.
+  # Override the defaults set in sshkeys::create_key, as needed.
   if $ensure {
     Sshkeys::Setup_authorized_keys <| title == $title |> {
       ensure  => $ensure,

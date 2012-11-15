@@ -1,6 +1,7 @@
 # Create/regenerate/remove a key pair on the keymaster.
-# This definition is private, i.e. it is not intended to be called directly by users.
-# sshkeys::key calls it to create virtual keys, which are realized in sshkeys::keymaster.
+# This definition is private, i.e. it is not intended to be called
+# directly by users. sshkeys::create_key calls it to create virtual
+# keys, which are realized in sshkeys::keymaster.
 define sshkeys::setup_key_master (
   $ensure,
   $force,

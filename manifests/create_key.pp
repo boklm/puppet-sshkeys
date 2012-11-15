@@ -1,13 +1,14 @@
 # Declare keys.  The approach here is just to define a bunch of
-# virtual resources, representing key files on the keymaster, client,
-# and server.  The virtual keys are then realized by
-# sshkeys::{keymaster,client,server}, respectively.  The reason for
-# doing things that way is that it makes sshkeys::key into a "one
-# stop shop" where users can declare their keys with all of their
-# parameters, whether those parameters apply to the keymaster, server,
-# or client.  The real work of creating, installing, and removing keys
-# is done in the private definitions called by the virtual resources:
-# ssh_auth_key_{master,server,client}.
+# virtual resources, representing key files on the keymaster, client
+# key pair, and authorized_keys.  The virtual keys are then realized by
+# sshkeys::{keymaster,install_client_key_pair,install_to_authorized_keys},
+# respectively.  The reason for doing things that way is that it makes
+# sshkeys::create_key into a "one stop shop" where users can declare
+# their keys with all of their parameters, whether those parameters
+# apply to the keymaster, authorized_keys, or client key pair.  The real
+# work of creating, installing, and removing keys is done in the private
+# definitions called by the virtual resources:
+# setup_{key_master,authorized_keys,client_key_pair}.
 define sshkeys::create_key (
   $ensure = "present",
   $filename = "",
