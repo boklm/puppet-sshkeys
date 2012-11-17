@@ -1,5 +1,3 @@
-Notify { withpath => false }
-
 # Install a key pair into a user's account.
 define sshkeys::set_client_key_pair (
   $keyname = '',

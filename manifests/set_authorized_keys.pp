@@ -1,5 +1,3 @@
-Notify { withpath => false }
-
 # Install a public key into a server user's authorized_keys(5) file.
 define sshkeys::set_authorized_keys (
   $keyname = '',
