@@ -1,8 +1,8 @@
 # Keymaster host:
 # Create key storage; create, regenerate, and remove key pairs
 class sshkeys::keymaster {
-  include sshkeys
-  file { $sshkeys::keymaster_storage:
+  include sshkeys::var
+  file { $sshkeys::var::keymaster_storage:
     ensure => directory,
     owner  => puppet,
     group  => puppet,

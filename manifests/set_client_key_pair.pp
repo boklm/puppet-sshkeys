@@ -7,7 +7,7 @@ define sshkeys::set_client_key_pair (
   $home = '',
   $user
 ) {
-  include sshkeys
+  include sshkeys::var
   File {
     owner   => $user,
     group   => $group ? { '' => $user, default => $group },
@@ -17,7 +17,7 @@ define sshkeys::set_client_key_pair (
 
   $_keyname = $keyname ? { '' => $title, default => $keyname }
   $_home = $home ? { '' => "/home/${user}", default => $home }
-  $key_src_file = "${sshkeys::keymaster_storage}/${_keyname}/key" # on the keymaster
+  $key_src_file = "${sshkeys::var::keymaster_storage}/${_keyname}/key" # on the keymaster
   $key_tgt_file = "${_home}/.ssh/${filename}" # on the client
 
   $key_src_content_pub = file("${key_src_file}.pub", "/dev/null")
