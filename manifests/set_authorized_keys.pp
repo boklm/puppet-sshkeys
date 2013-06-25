@@ -7,11 +7,11 @@ define sshkeys::set_authorized_keys (
   $options = '',
   $user
 ) {
-  include sshkeys::var
+  
   $_keyname = $keyname ? { '' => $title, default => $keyname }
   $_home = $home ? { "" => "/home/${user}", default => $home }
   # on the keymaster:
-  $key_src_dir = "${sshkeys::var::keymaster_storage}/${_keyname}"
+  $key_src_dir = "${sshkeys::keymaster_storage}/${_keyname}"
   $key_src_file = "${key_src_dir}/key.pub"
   # on the server:
   $key_tgt_file = "${_home}/.ssh/authorized_keys"

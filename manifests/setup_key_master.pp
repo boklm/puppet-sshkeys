@@ -10,7 +10,7 @@ define sshkeys::setup_key_master (
   $maxdays,
   $mindate
 ) {
-  include sshkeys::var
+
   Exec { path => "/usr/bin:/usr/sbin:/bin:/sbin" }
   File {
     owner => puppet,
@@ -18,7 +18,7 @@ define sshkeys::setup_key_master (
     mode  => 600,
   }
 
-  $keydir = "${sshkeys::var::keymaster_storage}/${title}"
+  $keydir = "${sshkeys::keymaster_storage}/${title}"
   $keyfile = "${keydir}/key"
 
   file {
