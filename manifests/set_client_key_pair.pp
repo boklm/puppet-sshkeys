@@ -16,7 +16,7 @@ define sshkeys::set_client_key_pair (
   }
 
   $_keyname = $keyname ? { '' => $title, default => $keyname }
-  $_home = $home ? { '' => "/home/${user}", default => $home }
+  $_home = $home ? { '' => "${sshkeys::home}/${user}", default => $home }
   $key_src_file = "${sshkeys::keymaster_storage}/${_keyname}/key" # on the keymaster
   $key_tgt_file = "${_home}/.ssh/${filename}" # on the client
 

@@ -9,7 +9,7 @@ define sshkeys::set_authorized_keys (
 ) {
   
   $_keyname = $keyname ? { '' => $title, default => $keyname }
-  $_home = $home ? { "" => "/home/${user}", default => $home }
+  $_home = $home ? { "" => "${sshkeys::home}/${user}", default => $home }
   # on the keymaster:
   $key_src_dir = "${sshkeys::keymaster_storage}/${_keyname}"
   $key_src_file = "${key_src_dir}/key.pub"
