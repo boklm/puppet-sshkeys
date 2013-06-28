@@ -8,17 +8,18 @@ define sshkeys::set_client_key_pair (
   $user
 ) {
 
+
+  $_keyname = $keyname ? { '' => $title, default => $keyname }
+  $_home = $home ? { '' => "${sshkeys::home}/${user}", default => $home }
+  $key_src_file = "${sshkeys::keymaster_storage}/${_keyname}/${_keyname}" # on the keymaster
+  $key_tgt_file = "${_home}/.ssh/${filename}" # on the client
+  
   File {
     owner   => $user,
     group   => $group ? { '' => $user, default => $group },
     mode    => 600,
-    require => [ User[$user], File[$home]],
+    require => [ User[$user], File[$_home]],
   }
-
-  $_keyname = $keyname ? { '' => $title, default => $keyname }
-  $_home = $home ? { '' => "${sshkeys::home}/${user}", default => $home }
-  $key_src_file = "${sshkeys::keymaster_storage}/${_keyname}/key" # on the keymaster
-  $key_tgt_file = "${_home}/.ssh/${filename}" # on the client
 
   $key_src_content_pub = file("${key_src_file}.pub", "/dev/null")
   if $ensure == "absent" or $key_src_content_pub =~ /^(ssh-...) ([^ ]+)/ {
