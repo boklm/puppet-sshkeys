@@ -8,9 +8,10 @@ define sshkeys::setup_key_master (
   $keytype,
   $length,
   $maxdays,
-  $mindate
+  $mindate,
+  $email
 ) {
-  include sshkeys::var
+
   Exec { path => "/usr/bin:/usr/sbin:/bin:/sbin" }
   File {
     owner => puppet,
@@ -18,8 +19,9 @@ define sshkeys::setup_key_master (
     mode  => 600,
   }
 
-  $keydir = "${sshkeys::var::keymaster_storage}/${title}"
-  $keyfile = "${keydir}/key"
+  $keydir = "${sshkeys::keymaster_storage}/${title}"
+  
+  $keyfile = "${keydir}/${title}"
 
   file {
     "$keydir":
@@ -83,5 +85,21 @@ define sshkeys::setup_key_master (
       require => File[$keydir],
       before  => File[$keyfile, "${keyfile}.pub"],
     }
+    
+    if $email {
+	    # Command to email key to user
+	    # Idea courtesy of http://www.warden.pl/2012/09/05/puppet-send-an-email-to-the-client-when-a-new-key-is-generated/
+	    exec { "Notify user ${email}":
+	      command => "/usr/bin/python /common/puppet/emailKey.py ${keyfile} ${email}",	      
+	      timeout => 30,
+	      tries => 3,
+	      try_sleep => 10,
+	      require => File[$keyfile],
+	      subscribe => Exec["Create key $title: $keytype, $length bits"],
+	      refreshonly => true
+	    }      
+    }
   }
 }
+
+# I am Vinz, Vinz Clortho, Keymaster of Gozer...Volguus Zildrohoar, Lord of the Seboullia. Are you the Gatekeeper?

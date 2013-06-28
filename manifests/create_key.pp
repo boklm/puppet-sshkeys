@@ -6,6 +6,7 @@ define sshkeys::create_key (
   $length = 2048,
   $maxdays = "",
   $mindate = "",
+  $email = ""
 ) {
   sshkeys::namecheck { "${title}-title": parm => "title", value => $title }
 
@@ -25,5 +26,6 @@ define sshkeys::create_key (
     length  => $_length,
     maxdays => $maxdays,
     mindate => $mindate,
+    email   => $email
   }
 }
