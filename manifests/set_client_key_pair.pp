@@ -12,7 +12,7 @@ define sshkeys::set_client_key_pair (
     owner   => $user,
     group   => $group ? { '' => $user, default => $group },
     mode    => 600,
-    require => [ User[$user], File[$home]],
+    require => File[$home],
   }
 
   $_keyname = $keyname ? { '' => $title, default => $keyname }
