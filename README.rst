@@ -15,6 +15,8 @@ When the key has not been generated yet, you may need to run puppet
 twice. The key will be generated on the first run, and installed on the
 second run.
 
+It is also possible to configure pre-defined ssh keys by passing them as 
+parameters to the main class.
 
 Usage
 =====
@@ -54,6 +56,28 @@ we use the `set_authorized_keys` ressource::
 Now, `user1` should have the `key1` key pair installed on his account,
 and be able to login to the `user2` account.
 
+Pre-defined keys
+================
+
+This is best done using Hiera. 
+
+Parametrizing the sshkeys class in Hiera::
+
+  sshkeys::manual_keys:
+    just_a_name:
+        user: odie
+        key: jon@jukebox
+
+This will fetch the (rsa, by default) key named "jon@jukebox" from hiera, and
+install it in the authorized_keys file of the user "odie" on every node that
+this hiera yaml file applies to. The name "just_a_name" is arbitrary.
+
+It is easiest to put::
+
+  jon@jukebox: "AAAa254BCDCBCC...poiuyt" 
+
+(without key types and all that) in hiera at the top level, so you can use them
+anywhere in your hierarchy.
 
 License
 =======
