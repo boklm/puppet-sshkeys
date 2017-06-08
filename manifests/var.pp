@@ -1,4 +1,4 @@
 class sshkeys::var(
-  $keymaster_storage = "/var/lib/puppet-sshkeys"
+  $keymaster_storage = "/opt/puppetlabs/puppet/cache/sshkeys"
 ) {
 }

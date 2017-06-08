@@ -15,7 +15,7 @@ define sshkeys::setup_key_master (
   File {
     owner => puppet,
     group => puppet,
-    mode  => 600,
+    mode  => '600',
   }
 
   $keydir = "${sshkeys::var::keymaster_storage}/${title}"
@@ -24,12 +24,12 @@ define sshkeys::setup_key_master (
   file {
     "$keydir":
       ensure => directory,
-      mode   => 644;
+      mode   => '644';
     "$keyfile":
       ensure => $ensure;
     "${keyfile}.pub":
       ensure => $ensure,
-      mode   => 644;
+      mode   => '644';
   }
 
   if $ensure == "present" {
@@ -40,7 +40,7 @@ define sshkeys::setup_key_master (
     # * $keytype or $length have changed
 
     $keycontent = file("${keyfile}.pub", "/dev/null")
-    if $keycontent {
+    if $keycontent and !generate("/usr/bin/find", $sshkeys::var::keymaster_storage, "-name", $title) {
 
       if $force {
         $reason = "force=true"

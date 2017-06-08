@@ -6,7 +6,7 @@ class sshkeys::keymaster {
     ensure => directory,
     owner  => puppet,
     group  => puppet,
-    mode   => 644,
+    mode   => '644',
   }
   # Realize all virtual master keys
   Sshkeys::Setup_key_master <| |>
